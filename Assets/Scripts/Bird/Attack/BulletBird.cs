@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BulletBird : MonoBehaviour
 {
-    float _speed = 3;
+    private float _speed = 3;
 
     private void Update()
     {

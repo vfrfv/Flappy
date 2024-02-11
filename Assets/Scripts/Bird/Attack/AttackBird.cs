@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent (typeof(Animator))]
@@ -8,8 +9,8 @@ public class AttackBird : BulletBirdPool
     [SerializeField] private BulletBird _prefabBulletBird;
 
     private Animator _animator;
-    private float _lastFireTime;
-    private float _firingTimer = 1;
+    private float _delayedFiring = 1;
+    private Coroutine _coroutine;
 
     private void Awake()
     {
@@ -19,11 +20,16 @@ public class AttackBird : BulletBirdPool
     private void Start()
     {
         Inetialeze(_prefabBulletBird);
+
+        _coroutine = StartCoroutine(Shoot());
     }
 
-    private void Update()
+    private IEnumerator Shoot()
     {
-        if(Time.time - _lastFireTime >= _firingTimer)
+        bool IsShooting = true;
+        var delay = new WaitForSeconds(_delayedFiring);
+
+        while (IsShooting)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -34,13 +40,15 @@ public class AttackBird : BulletBirdPool
 
                     _animator.SetTrigger(AnimatorAttack);
 
-                    _lastFireTime = Time.time;
+                    yield return delay;
                 }
                 else
                 {
                     Ñreate(_prefabBulletBird);
                 }
             }
-        }   
+
+            yield return null;
+        }
     }
 }

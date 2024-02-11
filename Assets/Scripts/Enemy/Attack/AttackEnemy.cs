@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-[RequireComponent (typeof(Animator))]
+[RequireComponent(typeof(Animator))]
 public class AttackEnemy : PoolBullets
 {
     private const string AnimatorAttack = "Attack";
@@ -8,8 +9,8 @@ public class AttackEnemy : PoolBullets
     [SerializeField] private BulletEnemy _prefabBulletEnemy;
 
     private Animator _animator;
-    private float _elapsedTime = 0;
-    private int _firingTimer = 3;
+    private float _delayedFiring = 3;
+    private Coroutine _coroutine;
 
     private void Awake()
     {
@@ -19,23 +20,28 @@ public class AttackEnemy : PoolBullets
     private void Start()
     {
         Initialize(_prefabBulletEnemy);
+
+        _coroutine = StartCoroutine(Shoot());
     }
 
-    private void Update()
+    private IEnumerator Shoot()
     {
-        _elapsedTime += Time.deltaTime;
+        bool IsShooting = true;
+        var delay = new WaitForSeconds(_delayedFiring);
 
-        if (_elapsedTime >= _firingTimer)
+        while (IsShooting)
         {
-            _elapsedTime = 0;
-
             if (TryGetObject(out BulletEnemy bullet))
             {
                 bullet.gameObject.SetActive(true);
                 bullet.transform.position = gameObject.transform.position;
 
                 _animator.SetTrigger(AnimatorAttack);
+
+                yield return delay;
             }
+
+            yield return null;
         }
     }
 }
